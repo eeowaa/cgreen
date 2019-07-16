@@ -3,7 +3,7 @@
 #include "utils.h"
 
 #include <errno.h>
-#include <fcntl.h>
+#include "/usr/include/linux/fcntl.h"
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -23,6 +23,7 @@ int cgreen_pipe_open(int pipes[2])
 {
     int pipe_open_result;
     int pipe_nonblock_result;
+    int pipe_maxsize_result;
 
     pipe_open_result = pipe(pipes);
 
@@ -34,6 +35,20 @@ int cgreen_pipe_open(int pipes[2])
 
     if (pipe_nonblock_result != 0) {
         return pipe_open_result;
+    }
+
+    /* read end of the pipe */
+    pipe_maxsize_result = fcntl(pipes[0], F_SETPIPE_SZ, CGREEN_PIPE_SIZE_MAX);
+
+    if (pipe_maxsize_result != 0) {
+        return pipe_maxsize_result;
+    }
+
+    /* write end of the pipe */
+    pipe_maxsize_result = fcntl(pipes[1], F_SETPIPE_SZ, CGREEN_PIPE_SIZE_MAX);
+
+    if (pipe_maxsize_result != 0) {
+        return pipe_maxsize_result;
     }
 
     return 0;

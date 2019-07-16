@@ -8,6 +8,9 @@ namespace cgreen {
     extern "C" {
 #endif
 
+/* FIXME: Obtain from /proc/sys/fs/pipe-max-size */
+#define CGREEN_PIPE_SIZE_MAX 1048576
+
 int cgreen_pipe_open(int pipes[2]);
 void cgreen_pipe_close(int p);
 ssize_t cgreen_pipe_read(int p, void *buf, size_t count);
